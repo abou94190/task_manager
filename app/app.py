@@ -1,34 +1,67 @@
-from flask import Flask, jsonify, request
-from task_manager import TaskManager
+from flask import Flask, render_template, request, redirect, url_for, session
+from TaskManager import TaskManager  # Assuming TaskManager is in a separate file
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+
 task_manager = TaskManager()
 
 @app.route('/')
-def home():
-    return 'Hello, World!'
+def index():
+    if 'username' in session:
+        tasks = task_manager.get_all_tasks()
+        return render_template('index.html', tasks=tasks)
+    return redirect(url_for('login'))
 
-@app.route('/tasks', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        result = task_manager.login(username, password)
+        if result == "Login successful.":
+            session['username'] = username
+            return redirect(url_for('index'))
+        return render_template('login.html', error=result)
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        result = task_manager.register(username, password)
+        if result == "User registered.":
+            return redirect(url_for('login'))
+        return render_template('register.html', error=result)
+    return render_template('register.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    task_manager.logout()
+    return redirect(url_for('login'))
+
+@app.route('/add_task', methods=['POST'])
 def add_task():
-    data = request.get_json()
-    task_id = data.get('task_id')
-    description = data.get('description')
-    result = task_manager.add_task(task_id, description)
-    return jsonify({'message': result})
+    if 'username' in session:
+        task_id = request.form['task_id']
+        description = request.form['description']
+        priority = request.form['priority']
+        task_manager.add_task(task_id, description, priority)
+    return redirect(url_for('index'))
 
-@app.route('/tasks/<task_id>', methods=['GET'])
-def get_task(task_id):
-    result = task_manager.get_task(task_id)
-    if result == "Task not found.":
-        return jsonify({'message': result}), 404
-    return jsonify({'task': {task_id: result}})
+@app.route('/mark_completed/<task_id>')
+def mark_completed(task_id):
+    if 'username' in session:
+        task_manager.mark_task_completed(task_id)
+    return redirect(url_for('index'))
 
-@app.route('/tasks/<task_id>', methods=['DELETE'])
-def remove_task(task_id):
-    result = task_manager.remove_task(task_id)
-    if result == "Task not found.":
-        return jsonify({'message': result}), 404
-    return jsonify({'message': result})
+@app.route('/delete_task/<task_id>')
+def delete_task(task_id):
+    if 'username' in session:
+        task_manager.remove_task(task_id)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)

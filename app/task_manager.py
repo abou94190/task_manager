@@ -90,5 +90,3 @@ class TaskManager:
         elif filter_by == "priority":
             return {k: v for k, v in sorted(tasks.items(), key=lambda item: item[1]["priority"])}
         return tasks
-
-

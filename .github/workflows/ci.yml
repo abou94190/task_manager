@@ -1,52 +1,36 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - main 
-      - taches/abou # Déclenche sur les pushs vers la branche main
-  pull_request:
-    branches:
-      - main
-      - taches/abou  # Déclenche sur les pull requests vers la branche main
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2  # Action pour checkout le code du repo
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-    # Ajoutez d'autres étapes ci-dessous en fonction de vos besoins
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.12'  # Spécifiez votre version de Python
+        python-version: '3.8'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt  # Assurez-vous d'avoir un requirements.txt défini
+        pip install -r requirements.txt
 
-    # Exemple d'une étape de test
     - name: Run tests
       run: |
-        python -m pytest  # Commande pour exécuter les tests
+        pytest
 
-    # Exemple d'une étape de déploiement
-    - name: Deploy to production
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        # Commandes pour déployer l'application
+  notify:
+    needs: build
+    runs-on: ubuntu-latest
 
-    # Exemple d'une étape pour notifier
+    steps:
     - name: Notify Slack
-      if: success()  # Exécute seulement si toutes les étapes précédentes réussissent
-      uses: rtCamp/action-slack-notify@v3
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+      uses: rtCamp/action-slack-notify@v2
       with:
-        status: ${{ job.status }}
-        mention: '@channel'
-        message: 'Build ${{ job.status }} - ${{ github.workflow }}'
-
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: failure()

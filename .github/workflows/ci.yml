@@ -3,10 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - main  # Déclenche sur les pushs vers la branche main
+      - main 
+      - taches/abou # Déclenche sur les pushs vers la branche main
   pull_request:
     branches:
-      - main  # Déclenche sur les pull requests vers la branche main
+      - main
+      - taches/abou  # Déclenche sur les pull requests vers la branche main
 
 jobs:
   build:

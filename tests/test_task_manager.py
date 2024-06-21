@@ -1,10 +1,11 @@
 # test unitaire
 
+from app.task_manager import TaskManager
 import unittest
-import sys , os
+import sys
+import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app.task_manager import TaskManager
 
 class TestTaskManager(unittest.TestCase):
     def setUp(self):
@@ -106,7 +107,8 @@ class TestTaskManager(unittest.TestCase):
         self.manager.add_task("task1", "description1")
         result = self.manager.mark_task_completed("task1")
         self.assertEqual(result, "Task marked as completed.")
-        self.assertTrue(self.manager.users["user1"]["tasks"]["task1"]["completed"])
+        self.assertTrue(
+            self.manager.users["user1"]["tasks"]["task1"]["completed"])
 
     def test_update_task(self):
         # Test de la mise à jour d'une tâche existante
@@ -156,5 +158,9 @@ class TestTaskManager(unittest.TestCase):
         self.manager.login("user1", "password")
         self.manager.add_task("task1", "description1", "low")
         self.manager.add_task("task2", "description2", "high")
-        priority_sorted_tasks = self.manager.get_all_tasks(filter_by="priority")
-        self.assertEqual(list(priority_sorted_tasks.keys()), ["task2", "task1"])
+        priority_sorted_tasks = self.manager.get_all_tasks(
+            filter_by="priority")
+        self.assertEqual(
+            list(
+                priority_sorted_tasks.keys()), [
+                "task2", "task1"])

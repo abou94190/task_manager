@@ -1,3 +1,5 @@
+from app.task_manager import TaskManager
+from app.app import app
 import unittest
 import sys
 import os
@@ -5,8 +7,6 @@ import os
 # Ajouter le répertoire racine au PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.app import app
-from app.task_manager import TaskManager
 
 class TestIntegration(unittest.TestCase):
 
@@ -17,7 +17,8 @@ class TestIntegration(unittest.TestCase):
         TaskManager().tasks = {}  # Réinitialiser les tâches pour chaque test
 
     def test_register_login_logout(self):
-        # Testez vos fonctionnalités d'inscription, de connexion et de déconnexion ici
+        # Testez vos fonctionnalités d'inscription, de connexion et de
+        # déconnexion ici
         pass
 
     def test_add_task(self):
@@ -31,6 +32,7 @@ class TestIntegration(unittest.TestCase):
     def test_delete_task(self):
         # Testez la suppression de tâches ici
         pass
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -10,7 +10,11 @@ class TaskManagerUser(HttpUser):
 
     @task
     def create_task(self):
-        self.client.post("/tasks", json={"title": "New Task", "description": "Task description"})
+        self.client.post(
+            "/tasks",
+            json={
+                "title": "New Task",
+                "description": "Task description"})
 
     @task
     def get_tasks(self):
@@ -18,7 +22,11 @@ class TaskManagerUser(HttpUser):
 
     @task
     def update_task(self):
-        self.client.put("/tasks/1", json={"title": "Updated Task", "description": "Updated description"})
+        self.client.put(
+            "/tasks/1",
+            json={
+                "title": "Updated Task",
+                "description": "Updated description"})
 
     @task
     def delete_task(self):

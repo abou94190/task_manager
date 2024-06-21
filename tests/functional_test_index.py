@@ -10,29 +10,32 @@ from selenium.webdriver.support.ui import Select
 driver = webdriver.Chrome()
 
 
-
 def login(driver, username, password):
     driver.get('http://localhost:5000/login')  # URL to the login page
 
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH,'/html/body/div/form/input[1]'))
-    )
+    WebDriverWait(
+        driver, 10).until(
+        EC.presence_of_element_located(
+            (By.XPATH, '/html/body/div/form/input[1]')))
 
-    username_input =driver.find_element(By.XPATH,'/html/body/div/form/input[1]')
+    username_input = driver.find_element(
+        By.XPATH, '/html/body/div/form/input[1]')
     username_input.send_keys("sumon")
 
-        # Find the password input element and enter the password
-    password_input = driver.find_element(By.XPATH, '/html/body/div/form/input[2]')
+    # Find the password input element and enter the password
+    password_input = driver.find_element(
+        By.XPATH, '/html/body/div/form/input[2]')
     password_input.send_keys("1234")
 
-        # Find the login button and click it
+    # Find the login button and click it
     login_button = driver.find_element(By.XPATH, '/html/body/div/form/button')
     login_button.click()
 
+
 time.sleep(2)
 WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, '/html/head/title'))
-    )
+    EC.presence_of_element_located((By.XPATH, '/html/head/title'))
+)
 
 
 def add_task(task_id, task_description, task_priority):
@@ -41,15 +44,11 @@ def add_task(task_id, task_description, task_priority):
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, 'task_id'))
     )
-   
-
-
-    
 
     # Find the input elements by their name or id attributes
     task_id_input = driver.find_element(By.NAME, 'task_id')
     task_description_input = driver.find_element(By.NAME, 'description')
-    task_priority_dropdown =Select(driver.find_element(By.NAME, 'priority'))
+    task_priority_dropdown = Select(driver.find_element(By.NAME, 'priority'))
 
     # Fill in the task ID
     task_id_input.send_keys("15")
@@ -71,7 +70,7 @@ def add_task(task_id, task_description, task_priority):
     )
 
 
-def verify_task(task_id,description,priority):
+def verify_task(task_id, description, priority):
     task_table = driver.find_element(By.XPATH, '/html/body/div/ul')
     rows = task_table.find_elements(By.XPATH, '/html/body/div/ul/li[1]')
 
@@ -85,6 +84,7 @@ def verify_task(task_id,description,priority):
 
     assert task_found, "Task was not found in the task table"
 
+
 def logout(driver):
     logout_button = driver.find_element(By.XPATH, '/html/body/div/a')
     logout_button.click()
@@ -93,9 +93,8 @@ def logout(driver):
         EC.presence_of_element_located((By.NAME, 'username'))
     )
 
-  
+
 def test_task_manager():
-    
 
     try:
         # Login
@@ -113,6 +112,7 @@ def test_task_manager():
     finally:
         # Close the browser
         driver.quit()
+
 
 # Run the test
 if __name__ == "__main__":

@@ -1,0 +1,3 @@
+Flask==3.0.3
+#locustio==0.999
+selenium==4.22.0

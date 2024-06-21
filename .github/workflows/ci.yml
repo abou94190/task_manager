@@ -1,0 +1,36 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        python -m unittest discover -s tests
+
+  notify:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Notify Slack
+      uses: rtCamp/action-slack-notify@v2
+      with:
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: failure()

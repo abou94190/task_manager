@@ -59,6 +59,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           cd /path/to/your/application
           git pull origin main
+          git pull origin taches/merge
           source venv/bin/activate
           pip install -r requirements.txt
           # Add any additional deployment steps here

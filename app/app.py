@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+
 from task_manager import TaskManager  # Assuming TaskManager is in a separate file
 
+
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 task_manager = TaskManager()
 

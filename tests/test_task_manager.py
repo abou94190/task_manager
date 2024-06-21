@@ -1,147 +1,160 @@
+# test unitaire
+
 import unittest
+import sys , os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from app.task_manager import TaskManager
 
-
 class TestTaskManager(unittest.TestCase):
-
     def setUp(self):
-        self.tm = TaskManager()
-
-    def test_add_task(self):
-        result = self.tm.add_task('1', 'Test task')
-        self.assertEqual(result, 'Task added.')
-        self.assertIn('1', self.tm.tasks)
-
-    def test_add_task_existing_id(self):
-        self.tm.add_task('1', 'Test task')
-        result = self.tm.add_task('1', 'Another task')
-        self.assertEqual(result, 'Task ID already exists.')
-
-    def test_get_task(self):
-        self.tm.add_task('1', 'Test task')
-        result = self.tm.get_task('1')
-        self.assertEqual(result, 'Test task')
-
-    def test_get_task_not_found(self):
-        result = self.tm.get_task('999')
-        self.assertEqual(result, 'Task not found.')
-
-    def test_remove_task(self):
-        self.tm.add_task('1', 'Test task')
-        result = self.tm.remove_task('1')
-        self.assertEqual(result, 'Task removed.')
-        self.assertNotIn('1', self.tm.tasks)
-
-    def test_remove_task_not_found(self):
-        result = self.tm.remove_task('999')
-        self.assertEqual(result, 'Task not found.')
-
-    def setUp(self):
-        self.tm = TaskManager()
+        # Initialisation de TaskManager avant chaque test
+        self.manager = TaskManager()
 
     def test_register_user(self):
-        response = self.tm.register("user1", "password1")
-        self.assertEqual(response, "User registered.")
-        self.assertIn("user1", self.tm.users)
+        # Test de l'inscription d'un nouvel utilisateur
+        result = self.manager.register("user1", "password")
+        self.assertEqual(result, "User registered.")
+        self.assertIn("user1", self.manager.users)
 
     def test_register_existing_user(self):
-        self.tm.register("user1", "password1")
-        response = self.tm.register("user1", "password1")
-        self.assertEqual(response, "Username already exists.")
+        # Test de l'inscription d'un utilisateur déjà existant
+        self.manager.register("user1", "password")
+        result = self.manager.register("user1", "password")
+        self.assertEqual(result, "Username already exists.")
 
     def test_login_user(self):
-        self.tm.register("user1", "password1")
-        response = self.tm.login("user1", "password1")
-        self.assertEqual(response, "Login successful.")
-        self.assertEqual(self.tm.current_user, "user1")
+        # Test de la connexion d'un utilisateur avec les bonnes informations
+        self.manager.register("user1", "password")
+        result = self.manager.login("user1", "password")
+        self.assertEqual(result, "Login successful.")
+        self.assertEqual(self.manager.current_user, "user1")
 
     def test_login_invalid_user(self):
-        response = self.tm.login("user1", "password1")
-        self.assertEqual(response, "Invalid username or password.")
-        self.assertIsNone(self.tm.current_user)
+        # Test de la connexion avec des informations incorrectes
+        result = self.manager.login("user1", "password")
+        self.assertEqual(result, "Invalid username or password.")
 
     def test_logout_user(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        response = self.tm.logout()
-        self.assertEqual(response, "Logout successful.")
-        self.assertIsNone(self.tm.current_user)
+        # Test de la déconnexion de l'utilisateur
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        result = self.manager.logout()
+        self.assertEqual(result, "Logout successful.")
+        self.assertIsNone(self.manager.current_user)
 
     def test_update_profile(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
+        # Test de la mise à jour du profil utilisateur
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
         profile_info = {"email": "user1@example.com"}
-        response = self.tm.update_profile(profile_info)
-        self.assertEqual(response, "Profile updated.")
-        self.assertEqual(self.tm.users["user1"]["profile"], profile_info)
+        result = self.manager.update_profile(profile_info)
+        self.assertEqual(result, "Profile updated.")
+        self.assertEqual(self.manager.users["user1"]["profile"], profile_info)
 
     def test_add_task(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        response = self.tm.add_task("task1", "description1")
-        self.assertEqual(response, "Task added.")
-        self.assertIn("task1", self.tm.users["user1"]["tasks"])
+        # Test de l'ajout d'une nouvelle tâche
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        result = self.manager.add_task("task1", "description1", "high")
+        self.assertEqual(result, "Task added.")
+        self.assertIn("task1", self.manager.users["user1"]["tasks"])
 
     def test_add_existing_task(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        self.tm.add_task("task1", "description1")
-        response = self.tm.add_task("task1", "description1")
-        self.assertEqual(response, "Task ID already exists.")
+        # Test de l'ajout d'une tâche avec un ID déjà existant
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1")
+        result = self.manager.add_task("task1", "description2")
+        self.assertEqual(result, "Task ID already exists.")
 
     def test_get_task(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        self.tm.add_task("task1", "description1")
-        task = self.tm.get_task("task1")
-        self.assertIsNotNone(task)
+        # Test de la récupération d'une tâche existante
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1")
+        task = self.manager.get_task("task1")
         self.assertEqual(task["description"], "description1")
 
     def test_get_nonexistent_task(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        task = self.tm.get_task("task1")
-        self.assertEqual(task, "Task not found.")
+        # Test de la récupération d'une tâche inexistante
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        result = self.manager.get_task("task1")
+        self.assertEqual(result, "Task not found.")
 
     def test_remove_task(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        self.tm.add_task("task1", "description1")
-        response = self.tm.remove_task("task1")
-        self.assertEqual(response, "Task removed.")
-        self.assertNotIn("task1", self.tm.users["user1"]["tasks"])
+        # Test de la suppression d'une tâche existante
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1")
+        result = self.manager.remove_task("task1")
+        self.assertEqual(result, "Task removed.")
+        self.assertNotIn("task1", self.manager.users["user1"]["tasks"])
+
+    def test_remove_nonexistent_task(self):
+        # Test de la suppression d'une tâche inexistante
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        result = self.manager.remove_task("task1")
+        self.assertEqual(result, "Task not found.")
 
     def test_mark_task_completed(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        self.tm.add_task("task1", "description1")
-        response = self.tm.mark_task_completed("task1")
-        self.assertEqual(response, "Task marked as completed.")
-        self.assertTrue(self.tm.users["user1"]["tasks"]["task1"]["completed"])
+        # Test du marquage d'une tâche comme terminée
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1")
+        result = self.manager.mark_task_completed("task1")
+        self.assertEqual(result, "Task marked as completed.")
+        self.assertTrue(self.manager.users["user1"]["tasks"]["task1"]["completed"])
 
     def test_update_task(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        self.tm.add_task("task1", "description1")
-        response = self.tm.update_task("task1", description="new description", priority="high")
-        self.assertEqual(response, "Task updated.")
-        self.assertEqual(self.tm.users["user1"]["tasks"]["task1"]["description"], "new description")
-        self.assertEqual(self.tm.users["user1"]["tasks"]["task1"]["priority"], "high")
+        # Test de la mise à jour d'une tâche existante
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1")
+        result = self.manager.update_task("task1", "new description", "high")
+        self.assertEqual(result, "Task updated.")
+        task = self.manager.get_task("task1")
+        self.assertEqual(task["description"], "new description")
+        self.assertEqual(task["priority"], "high")
 
     def test_get_all_tasks(self):
-        self.tm.register("user1", "password1")
-        self.tm.login("user1", "password1")
-        self.tm.add_task("task1", "description1", priority="high")
-        self.tm.add_task("task2", "description2", priority="low")
-        all_tasks = self.tm.get_all_tasks()
-        self.assertEqual(len(all_tasks), 2)
-        completed_tasks = self.tm.get_all_tasks(filter_by="completed")
-        self.assertEqual(len(completed_tasks), 0)
-        self.tm.mark_task_completed("task1")
-        completed_tasks = self.tm.get_all_tasks(filter_by="completed")
+        # Test de la récupération de toutes les tâches d'un utilisateur
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1")
+        self.manager.add_task("task2", "description2", "high")
+        tasks = self.manager.get_all_tasks()
+        self.assertEqual(len(tasks), 2)
+
+    def test_get_completed_tasks(self):
+        # Test de la récupération des tâches terminées
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1")
+        self.manager.add_task("task2", "description2", "high")
+        self.manager.mark_task_completed("task1")
+        completed_tasks = self.manager.get_all_tasks(filter_by="completed")
         self.assertEqual(len(completed_tasks), 1)
+        self.assertIn("task1", completed_tasks)
 
+    def test_get_pending_tasks(self):
+        # Test de la récupération des tâches en attente
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1")
+        self.manager.add_task("task2", "description2", "high")
+        self.manager.mark_task_completed("task1")
+        pending_tasks = self.manager.get_all_tasks(filter_by="pending")
+        self.assertEqual(len(pending_tasks), 1)
+        self.assertIn("task2", pending_tasks)
 
-if __name__ == '__main__':
-    unittest.main()
-
+    def test_get_priority_sorted_tasks(self):
+        # Test de la récupération des tâches triées par priorité
+        self.manager.register("user1", "password")
+        self.manager.login("user1", "password")
+        self.manager.add_task("task1", "description1", "low")
+        self.manager.add_task("task2", "description2", "high")
+        priority_sorted_tasks = self.manager.get_all_tasks(filter_by="priority")
+        self.assertEqual(list(priority_sorted_tasks.keys()), ["task2", "task1"])

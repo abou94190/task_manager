@@ -23,7 +23,9 @@
             {% for task_id, task in tasks.items() %}
             <li>
                 <strong>{{ task_id }}</strong>: {{ task['description'] }} ({{ task['priority'] }})
-                {% if not task['completed'] %}
+                {% if task['completed'] %}
+                <span>Completed</span>
+                {% else %}
                 <a href="{{ url_for('mark_completed', task_id=task_id) }}">Mark as completed</a>
                 {% endif %}
                 <a href="{{ url_for('delete_task', task_id=task_id) }}">Delete</a>

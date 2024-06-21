@@ -7,8 +7,8 @@ class TestTaskManager(unittest.TestCase):
     def setUp(self):
         self.tm = TaskManager()
 
-    def testaddtask(self):
-        result = self.tm.addtask('1', 'Test task')
+    def test_add_task(self):
+        result = self.tm.add_task('1', 'Test task')
         self.assertEqual(result, 'Task added.')
         self.assertIn('1', self.tm.tasks)
 

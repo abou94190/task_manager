@@ -14,6 +14,7 @@ def index():
         return render_template('index.html', tasks=tasks)
     return redirect(url_for('login'))
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Route pour la connexion, gère à la fois l'affichage du formulaire et la soumission
@@ -27,6 +28,7 @@ def login():
         return render_template('login.html', error=result)
     return render_template('login.html')
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     # Route pour l'inscription, gère à la fois l'affichage du formulaire et la soumission
@@ -39,12 +41,14 @@ def register():
         return render_template('register.html', error=result)
     return render_template('register.html')
 
+
 @app.route('/logout')
 def logout():
     # Route pour la déconnexion, supprime l'utilisateur de la session
     session.pop('username', None)
     task_manager.logout()
     return redirect(url_for('login'))
+
 
 @app.route('/add_task', methods=['POST'])
 def add_task():
@@ -63,12 +67,14 @@ def mark_completed(task_id):
         task_manager.mark_task_completed(task_id)
     return redirect(url_for('index'))
 
+
 @app.route('/delete_task/<task_id>')
 def delete_task(task_id):
     # Route pour supprimer une tâche, vérifie si l'utilisateur est connecté
     if 'username' in session:
         task_manager.remove_task(task_id)
     return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     # Exécute l'application en mode debug

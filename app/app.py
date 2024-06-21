@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from task_manager import TaskManager  # Assuming TaskManager is in a separate file
+
+from TaskManager import TaskManager  # Assuming TaskManager is in a separate file
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 task_manager = TaskManager()
 
@@ -54,7 +56,6 @@ def add_task():
         priority = request.form['priority']
         task_manager.add_task(task_id, description, priority)
     return redirect(url_for('index'))
-
 
 @app.route('/mark_completed/<task_id>')
 def mark_completed(task_id):

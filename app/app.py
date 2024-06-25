@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-
+import os
 from app.task_manager import TaskManager  # Assuming TaskManager is in a separate file
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 task_manager = TaskManager()
-
+app.secret_key = os.getenv('SECRET_KEY')
 
 @app.route('/')
 def index():
